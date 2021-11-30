@@ -1,0 +1,6 @@
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\bin\Debug\JA2Task2TestGenerator.exe.config
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\bin\Debug\JA2Task2TestGenerator.exe
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\bin\Debug\JA2Task2TestGenerator.pdb
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\obj\Debug\JA2Task2TestGenerator.csprojResolveAssemblyReference.cache
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\obj\Debug\JA2Task2TestGenerator.exe
+D:\Dropbox\Projects\Cpp-Programming\00. Judge Assignments\JA2\JA2-Task-2-Divisible-by-45\Test-Generator\JA2Task2TestGenerator\obj\Debug\JA2Task2TestGenerator.pdb

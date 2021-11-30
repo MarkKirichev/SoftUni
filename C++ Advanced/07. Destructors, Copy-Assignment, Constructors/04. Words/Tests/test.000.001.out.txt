@@ -1,0 +1,10 @@
+on 1
+sea 2
+sells 1
+she 1
+shells 1
+shore 1
+the 1
+---
+hello 1
+world 1

@@ -1,0 +1,3 @@
+Brand -> 0
+Model -> 0
+Year -> 0

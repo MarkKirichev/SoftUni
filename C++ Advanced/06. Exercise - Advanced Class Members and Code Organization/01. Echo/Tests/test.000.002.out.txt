@@ -1,0 +1,21 @@
+=== Contact Manager (C) Deluxe Edition ===
+Hints on? (y/n): 
+ben bendover@example.com
+--- Menu ---
+1. Add contact
+2. Remove contact
+3. Print contact
+4. Toggle hints off/on
+e. Exit
+Please enter a choice (1, 2, 3, or Q): 
+Enter the name or email of a contact:
+... removed ben bendover@example.com
+--- Menu ---
+1. Add contact
+2. Remove contact
+3. Print contact
+4. Toggle hints off/on
+e. Exit
+Please enter a choice (1, 2, 3, or Q): 
+Exiting...
+Thank you for using Contact Manager (C) Deluxe!

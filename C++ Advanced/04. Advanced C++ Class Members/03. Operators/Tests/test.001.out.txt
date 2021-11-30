@@ -1,0 +1,7 @@
+Formatted Lines
+----------------
+1. hello (5)
+2. c++ operators (13)
+3. what a weird thing (18)
+4. you can be (10)
+----------------

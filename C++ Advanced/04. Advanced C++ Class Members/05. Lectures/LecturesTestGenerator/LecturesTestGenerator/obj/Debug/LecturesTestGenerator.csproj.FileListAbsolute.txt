@@ -1,0 +1,7 @@
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\bin\Debug\LecturesTestGenerator.exe.config
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\bin\Debug\LecturesTestGenerator.exe
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\bin\Debug\LecturesTestGenerator.pdb
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\obj\Debug\LecturesTestGenerator.csprojResolveAssemblyReference.cache
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\obj\Debug\LecturesTestGenerator.csproj.CoreCompileInputs.cache
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\obj\Debug\LecturesTestGenerator.exe
+D:\Dropbox\Projects\Cpp-Advanced\Sep-2018\04. Advanced-Cpp-Class-Members\04. Homework\05. Lectures\LecturesTestGenerator\LecturesTestGenerator\obj\Debug\LecturesTestGenerator.pdb

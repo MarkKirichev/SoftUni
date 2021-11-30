@@ -1,0 +1,4 @@
+som3. text
+cut 1 7
+paste 3 4
+exit

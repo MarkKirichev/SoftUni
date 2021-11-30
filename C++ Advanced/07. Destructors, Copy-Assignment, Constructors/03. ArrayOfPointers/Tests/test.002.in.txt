@@ -1,0 +1,14 @@
+1
+10
+492019 berkshire_hathaway
+851317 apple
+470930 alibaba_group
+464189 facebook
+717404 alphabet
+702760 microsoft
+700672 amazon
+507990 tencent
+377410 jpmorgan_chase
+343780 johnson_&_johnson
+343780
+end

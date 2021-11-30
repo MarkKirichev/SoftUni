@@ -1,0 +1,7 @@
+test using cut only
+cut 0 2
+cut 3 4
+cut 14 16
+cut 0 3
+cut 4 8
+exit

@@ -1,0 +1,9 @@
+cut and paste testing
+cut 3 6
+paste 0 3
+cut 6 15
+paste 0 1
+cut 5 6
+paste 0 0
+cut 6 9
+exit

@@ -1,0 +1,14 @@
+mixed testing all commands
+cut 0 6
+uppercase 8 11
+uppercase 4 6
+cut 12 13
+paste 8 8
+cut 8 12
+paste 8 8
+uppercase 8 9
+paste 13 20
+cut 13 14
+cut 4 7
+paste 9 9
+exit

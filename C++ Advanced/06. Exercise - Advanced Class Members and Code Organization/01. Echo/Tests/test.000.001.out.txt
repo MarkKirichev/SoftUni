@@ -1,0 +1,17 @@
+=== Contact Manager (C) Deluxe Edition ===
+Hints on? (y/n): 
+--- Menu ---
+1. Add contact
+2. Remove contact
+3. Print contact
+4. Toggle hints off/on
+e. Exit
+Please enter a choice (1, 2, 3, or Q): 
+Enter contact name and email:
+--- Menu ---
+1. Add contact
+2. Remove contact
+3. Print contact
+4. Toggle hints off/on
+e. Exit
+Please enter a choice (1, 2, 3, or Q): 

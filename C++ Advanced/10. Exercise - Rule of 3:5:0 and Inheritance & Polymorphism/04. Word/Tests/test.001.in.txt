@@ -1,0 +1,4 @@
+abc d e
+cut 0 4
+uppercase 0 1
+exit

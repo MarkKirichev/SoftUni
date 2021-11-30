@@ -1,0 +1,8 @@
+edge cases paste and cut
+cut 0 0
+paste 0 0
+paste 5 10
+cut 16 19
+paste 5 5
+paste 0 0
+exit

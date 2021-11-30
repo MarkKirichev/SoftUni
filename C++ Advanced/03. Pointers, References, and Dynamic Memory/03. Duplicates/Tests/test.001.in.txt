@@ -1,0 +1,6 @@
+pbcup (M.Y.,D.I.,B.Q.)
+*begin
+d (O.T.,Q.T.,D.X.)
+*end
+d (O.T.,Q.T.,D.X.)
+end

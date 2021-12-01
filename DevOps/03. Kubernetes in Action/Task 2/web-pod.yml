@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hw-web-pod
+  labels:
+    app: hw-web
+spec:
+  containers:
+  - name: hw-web-container
+    image: shekeriev/dob-w3-php
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: /var/www/html/
+      name: web-site
+  volumes:
+  - name: web-site
+    hostPath:
+      path: /home/docker/site
+      type: Directory

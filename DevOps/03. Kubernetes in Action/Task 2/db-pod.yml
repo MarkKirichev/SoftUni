@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hw-db-pod
+  labels:
+    app: hw-db
+spec:
+  containers:
+  - name: hw-db-container
+    image: shekeriev/dob-w3-mysql
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "12345"
+    ports:
+    - containerPort: 3306    

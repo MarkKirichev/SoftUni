@@ -1,0 +1,158 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$script = <<SCRIPT
+echo "* Install dependencies ..."
+sudo dnf install -y unzip curl wget vim
+
+echo "* Turn off the firewall ..."
+sudo systemctl disable --now firewalld
+
+echo "* Turn off SELinux ..."
+sudo setenforce 0
+
+echo "* Fetching Consul ..."
+CONSUL_VERSION=1.10.2
+cd /tmp/
+curl -sSL https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip > consul.zip
+
+echo "* Installing Consul ..."
+unzip consul.zip
+sudo chmod +x consul
+sudo mv consul /usr/bin/consul
+
+sudo mkdir -p /etc/consul.d
+sudo chmod a+w /etc/consul.d
+
+sudo mkdir -p /opt/consul
+sudo chmod a+w /opt/consul
+
+echo "* Fetching Nomad ..."
+NOMAD_VERSION=1.1.4
+cd /tmp/
+curl -sSL https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip -o nomad.zip
+
+echo "* Installing Nomad ..."
+unzip nomad.zip
+sudo chmod +x nomad
+sudo mv nomad /usr/bin/nomad
+
+sudo mkdir -p /etc/nomad.d
+sudo chmod a+w /etc/nomad.d
+
+sudo mkdir -p /opt/nomad
+sudo chmod a+w /opt/nomad
+
+echo "* Set hostname's IP to made advertisement Just Work"
+sudo sed -i -e "s/.*server.*/$(ip route get 192.168.50 | awk '{print $NF;exit}') $(hostname)/" /etc/hosts
+sudo sed -i -e "s/.*client.*/$(ip route get 192.168.50 | awk '{print $NF;exit}') $(hostname)/" /etc/hosts
+
+SCRIPT
+
+$docker = <<DOCKER
+echo "* Install BASH Completion ..."
+sudo dnf install -y bash-completion
+
+echo "* Add Docker repository ..."
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+echo "* Install Docker ..."
+sudo dnf install -y docker-ce docker-ce-cli
+
+echo "* Adjust Docker configuration ..."
+sudo mkdir -p /etc/docker
+echo '{ "hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"] }' | sudo tee /etc/docker/daemon.json
+sudo mkdir -p /etc/systemd/system/docker.service.d/
+echo [Service] | sudo tee /etc/systemd/system/docker.service.d/docker.conf
+echo ExecStart= | sudo tee -a /etc/systemd/system/docker.service.d/docker.conf
+echo ExecStart=/usr/bin/dockerd | sudo tee -a /etc/systemd/system/docker.service.d/docker.conf
+
+echo "* Enable and start Docker ..."
+sudo systemctl enable --now docker
+
+echo "* Add vagrant user to docker group ..."
+sudo usermod -aG docker vagrant
+
+echo "* Install Docker Compose ..."
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+echo "* Add BASH Completion for Docker Compose ..."
+sudo curl -L https://raw.githubusercontent.com/docker/compose/1.29.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+DOCKER
+
+$nomad = <<NOMAD
+echo "* Set vm.max_map_count to a higher value ..."
+sudo sysctl -w vm.max_map_count=262144
+
+echo "* Copying template configuration files ..."
+sudo cp /vagrant/nomad/server.hcl /etc/nomad.d/server.hcl
+
+echo "* Adjust the configuration ..."
+sudo sed -i -e "s/%SERVER_ADDRESS%/$(ip route get 192.168.50 | awk '{print $(NF-2);exit}')/" /etc/nomad.d/server.hcl
+sudo sed -i -e "s/%CLIENT_INTERFACE%/$(ip route | grep 192.168.50 | cut -d ' ' -f 3)/" /etc/nomad.d/server.hcl
+
+echo "* Starting nomad agent ..."
+sudo bash -c "nomad agent -config=/etc/nomad.d/server.hcl > /tmp/nomad 2>&1 &"
+
+NOMAD
+
+$consulsrv = <<CONSULSRV
+echo "* Copying template configuration files ..."
+sudo cp /vagrant/consul/server.json /etc/consul.d/server.json
+
+echo "* Adjust the configuration ..."
+sudo sed -i -e "s/%SERVER_ADDRESS%/$(ip route get 192.168.50 | awk '{print $(NF-2);exit}')/" /etc/consul.d/server.json
+
+echo "* Starting consul agent ..."
+sudo bash -c "consul agent -config-dir /etc/consul.d > /tmp/consul 2>&1 &"
+
+CONSULSRV
+
+$consulclnt = <<CONSULCLNT
+echo "* Copying template configuration files ..."
+sudo cp /vagrant/consul/client.json /etc/consul.d/client.json
+
+echo "* Adjust configuration of Consul ..."
+sudo sed -i -e "s/%CLIENT_ADDRESS%/$(ip route get 192.168.50 | awk '{print $(NF-2);exit}')/" /etc/consul.d/client.json
+
+echo "* Reload services definitions ..."
+sudo systemctl daemon-reload
+
+echo "* Starting consul agent ..."
+sudo bash -c "consul agent -config-dir /etc/consul.d -advertise $(ip route get 192.168.50 | awk '{print $(NF-2);exit}') > /tmp/consul 2>&1 &"
+
+CONSULCLNT
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "3072"
+  end
+
+  config.vm.box = "shekeriev/centos-8-minimal"
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.provision "shell", inline: $script, privileged: false
+  config.vm.provision 'shell', inline: $docker, privileged: false
+
+  config.vm.define 'node1' do |node1|
+    node1.vm.hostname = 'node1'
+    node1.vm.network 'private_network', ip: '192.168.50.2'
+    node1.vm.provision "shell", inline: $consulsrv, privileged: false
+    node1.vm.provision "shell", inline: $nomad, privileged: false
+  end
+
+  config.vm.define 'node2' do |node2|
+    node2.vm.hostname = 'node2'
+    node2.vm.network 'private_network', ip: '192.168.50.3'
+    node2.vm.provision 'shell', inline: $consulclnt, privileged: false
+    node2.vm.provision 'shell', inline: $nomad, privileged: false
+  end
+
+  config.vm.define 'node3' do |node3|
+    node3.vm.hostname = 'node3'
+    node3.vm.network 'private_network', ip: '192.168.50.4'
+    node3.vm.provision 'shell', inline: $consulclnt, privileged: false
+    node3.vm.provision 'shell', inline: $nomad, privileged: false
+  end
+
+end

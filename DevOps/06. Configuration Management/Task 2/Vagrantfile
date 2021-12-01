@@ -1,0 +1,103 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  $hosts = <<HOSTS
+    echo '127.0.0.1 localhost' | sudo tee /etc/hosts
+    echo '::1 localhost' | sudo tee -a /etc/hosts
+    echo '192.168.50.2 master' | sudo tee -a /etc/hosts
+    echo '192.168.50.3 node1' | sudo tee -a /etc/hosts
+    echo '192.168.50.4 node2' | sudo tee -a /etc/hosts
+HOSTS
+
+  $masterrpm = <<MASTERRPM
+    sudo dnf install -y https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+    sudo dnf install -y puppetserver
+
+    sudo sed -i 's@Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin@Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/opt/puppetlabs/bin@g' /etc/sudoers
+
+    sudo puppet config set dns_alt_names master
+    sudo puppet config set server master
+    sudo puppet config set caserver master
+    sudo puppet config set reportserver master
+    sudo puppetserver ca setup
+
+    sudo mkdir -p $(sudo puppet config print --section master confdir)
+    echo node1 | sudo tee $(sudo puppet config print --section master confdir)/autosign.conf
+    echo node2 | sudo tee -a $(sudo puppet config print --section master confdir)/autosign.conf
+    
+    sudo sed -i 's@-Xms2g -Xmx2g@-Xms512m -Xmx512m@g' /etc/sysconfig/puppetserver
+
+    sudo systemctl enable --now puppetserver
+
+    sudo cp /vagrant/web.pp /etc/puppetlabs/code/environments/production/manifests/web.pp
+
+    sudo firewall-cmd --add-port=8140/tcp --permanent 
+    sudo firewall-cmd --reload     
+MASTERRPM
+
+  $agentrpm = <<AGENTRPM
+    sudo dnf install -y https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+    sudo dnf install -y puppet-agent
+
+    sudo sed -i 's@Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin@Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/opt/puppetlabs/bin@g' /etc/sudoers
+
+    sudo puppet config set server master
+    sudo puppet config set certname node1
+
+    sudo systemctl enable --now puppet
+
+    sudo puppet config set runinterval 30
+
+    sudo firewall-cmd --add-port=80/tcp --permanent 
+    sudo firewall-cmd --reload
+    
+AGENTRPM
+
+  $agentdeb = <<AGENTDEB
+    wget https://apt.puppet.com/puppet7-release-focal.deb
+    sudo dpkg -i puppet7-release-focal.deb
+    sudo apt-get update
+    sudo apt-get install -y puppet-agent
+
+    sudo sed -i 's@/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin@/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/opt/puppetlabs/bin@g' /etc/sudoers
+
+    sudo puppet config set server master
+    sudo puppet config set certname node2
+
+    sudo systemctl enable --now puppet
+
+    sudo puppet config set runinterval 30
+    
+AGENTDEB
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.provision "shell", inline: $hosts, privileged: false
+
+  config.vm.define 'master' do |master|
+    master.vm.box = "shekeriev/centos-8-minimal"
+    master.vm.hostname = 'master'
+    master.vm.network 'private_network', ip: '192.168.50.2'
+    master.vm.provision "shell", inline: $masterrpm, privileged: false
+  end
+
+  config.vm.define 'node1' do |node1|
+    node1.vm.box = "shekeriev/centos-8-minimal"
+    node1.vm.hostname = 'node1'
+    node1.vm.network 'private_network', ip: '192.168.50.3'
+    node1.vm.provision "shell", inline: $agentrpm, privileged: false
+  end
+
+  config.vm.define 'node2' do |node2|
+    node2.vm.box = "shekeriev/ubuntu-20-04-server"
+    node2.vm.hostname = 'node1'
+    node2.vm.network 'private_network', ip: '192.168.50.4'
+    node2.vm.provision "shell", inline: $agentdeb, privileged: false
+  end
+
+end

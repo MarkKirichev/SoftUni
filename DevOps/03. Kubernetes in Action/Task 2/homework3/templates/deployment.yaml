@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw-web-deployment
+  labels:
+    app: hw-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw-web
+  template:
+    metadata:
+      labels:
+        app: hw-web
+    spec:
+      containers:
+      - name: hw-web-container
+        image: shekeriev/dob-w3-php
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /var/www/html/
+          name: web-site
+      volumes:
+      - name: web-site
+        hostPath:
+          path: /home/docker/site
+          type: Directory
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw-db-deployment
+  labels:
+    app: hw-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hw-db
+  template:
+    metadata:
+      labels:
+        app: hw-db
+    spec:
+      containers:
+      - name: hw-db-container
+        image: shekeriev/dob-w3-mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "12345"
+        ports:
+        - containerPort: 3306

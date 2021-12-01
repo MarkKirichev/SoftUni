@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hw-web-pod
+  labels:
+    app: hw-web
+spec:
+  containers:
+  - name: hw-web-container
+    image: shekeriev/php-apache-mongo
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: /var/www/html/
+      name: web-data
+  volumes:
+  - name: web-data
+    hostPath:
+      path: /home/docker/web
+      type: Directory
